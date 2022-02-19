@@ -9,6 +9,9 @@
       <span class="icon-nav">
         <el-switch v-model="isCollapse" active-color="#304156" />
       </span>
+      <span class="logo-nav">
+        <h1>MAMS</h1>
+      </span>
 
       <el-submenu index="2">
         <template slot="title">
@@ -78,5 +81,14 @@ ul.el-menu-demo.el-menu--horizontal.el-menu {
   top: 17px;
   left: 17px;
   position: absolute;
+}
+.logo-nav {
+    top: 5px;
+    left: 75px;
+    font-size: 36px;
+    position: absolute;
+    color: #304156;
+    font-family: auto;
+    font-weight: 600;
 }
 </style>

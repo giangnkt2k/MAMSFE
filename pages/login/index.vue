@@ -70,8 +70,9 @@ export default {
           // eslint-disable-next-line no-console
           console.log(res.data.data.access_token)
           const token = res.data.data.access_token
-          // const currentUser = res.data.data.profile
+          const currentUser = res.data.data.profile
           this.$store.commit('auth/setAuthenticate', token)
+          this.$store.commit('user/setCurrentUser', currentUser)
           this.redirectByAuth()
           // this.$toast.success('ログイン成功');
         }

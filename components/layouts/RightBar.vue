@@ -9,50 +9,71 @@
       @open="handleOpen"
       @close="handleClose"
     >
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location" />
-          <span slot="title">Navigator One</span>
+      <template v-for="(menu, index) in menus">
+        <template v-if="!menu.link">
+          <el-submenu
+            :key="index"
+            :index="index.toString()"
+          >
+            <i slot="title" :class="[menu.icon]" />
+            <span slot="title">{{ menu.title }}</span>
+            <template v-if="menu.items">
+              <el-menu-item-group
+                v-for="(item, supIndex) in menu.items"
+                :key="supIndex"
+              >
+                <el-menu-item :index="supIndex.toString()">
+                  <nuxt-link
+                    :to="item.link"
+                    exact
+                    class="menu-item-link"
+                  >
+                    <span class="link-item">
+                      {{ item.title }}
+                    </span>
+                  </nuxt-link>
+                </el-menu-item>
+              </el-menu-item-group>
+            </template>
+          </el-submenu>
         </template>
-        <el-menu-item-group>
-          <span slot="title">Group One</span>
-          <el-menu-item index="1-1">
-            item one
+        <template v-else>
+          <el-menu-item :key="index+0.1" index="3">
+            <nuxt-link
+              :to="menu.link"
+              exact
+              class="menu-item-link"
+            >
+              <i :class="[menu.icon]" />
+              <span class="link-item">  {{ menu.title }}</span>
+            </nuxt-link>
           </el-menu-item>
-          <el-menu-item index="1-2">
-            item two
-          </el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="Group Two">
-          <el-menu-item index="1-3">
-            item three
-          </el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="1-4">
-          <span slot="title">item four</span>
-          <el-menu-item index="1-4-1">
-            item one
-          </el-menu-item>
+        </template>
+      </template>
+
+      <!-- <template v-else>
+        <el-submenu :index="index.toString()">
+          <nuxt-link
+            :to="menu.link"
+            exact
+            class="menu-item-link"
+          >
+            <template slot="title">
+              <i :class="[menu.icon]" />
+              <span slot="title">{{ menu.title }}</span>
+            </template>
+          </nuxt-link>
         </el-submenu>
-      </el-submenu>
-      <el-menu-item index="2">
-        <i class="el-icon-menu" />
-        <span slot="title">Navigator Two</span>
-      </el-menu-item>
-      <el-menu-item index="3" disabled>
-        <i class="el-icon-document" />
-        <span slot="title">Navigator Three</span>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <i class="el-icon-setting" />
-        <span slot="title">Navigator Four</span>
-      </el-menu-item>
+      </template> -->
     </el-menu>
   </div>
 </template>
 
 <script>
+import menuMixin from '~/mixins/menu.js'
 export default {
+  name: 'MoleculeMenu',
+  mixins: [menuMixin],
   props: {
     propsCollapse: {
       type: Boolean,
@@ -96,5 +117,9 @@ export default {
     z-index: 1001;
     overflow: hidden;
     transition: margin-left 0.25s;
+  }
+
+  .link-item {
+    color: #ffff;
   }
 </style>
