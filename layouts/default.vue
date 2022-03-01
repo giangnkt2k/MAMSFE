@@ -1,12 +1,14 @@
 <template>
   <div class="app-main">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <right-bar :props-collapse="isCollapse" />
     <div
       :class="{marginOff: isCollapse}"
       class="main-content-container"
     >
       <top-bar @handle-change-type-menu="handleChangeTypeMenu" />
-      <nuxt />
+      <nuxt class="min-h-screen bg-gray-100" />
+      <loading :props-is-loading="isLoading" />
     </div>
   </div>
 </template>
@@ -14,16 +16,24 @@
 <script>
 import RightBar from '@/components/layouts/RightBar.vue'
 import TopBar from '@/components/layouts/TopBar.vue'
+import loading from '@/components/elements/loading/index.vue'
 export default {
   name: 'DefaultLayoutTemplate',
   components: {
     RightBar,
-    TopBar
+    TopBar,
+    loading
   },
   middleware: ['initAuth', 'auth'],
   data () {
     return {
       isCollapse: false
+    }
+  },
+  computed: {
+    isLoading () {
+      // eslint-disable-next-line no-console
+      return this.$store.getters['pages/getLoading']
     }
   },
   methods: {

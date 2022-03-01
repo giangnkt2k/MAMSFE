@@ -1,0 +1,23 @@
+export const UTILITIES = [
+  { value: 1, label: 'Balcony', icon: 'el-icon-picture' },
+  { value: 2, label: 'Security', icon: 'el-icon-s-custom' },
+  { value: 3, label: 'Air conditioner', icon: 'el-icon-cloudy' },
+  { value: 4, label: 'Camera', icon: 'el-icon-video-camera-solid' },
+  { value: 5, label: 'Loft', icon: 'el-icon-s-home' },
+  { value: 6, label: 'Kitchen', icon: 'el-icon-fork-spoon' },
+  { value: 7, label: 'Bed ', icon: '' },
+  { value: 8, label: 'Parking ', icon: '' },
+  { value: 9, label: 'Elevator ', icon: '' },
+  { value: 10, label: 'TV', icon: '' },
+  { value: 11, label: 'Refrigerator ', icon: '' },
+  { value: 12, label: 'Internet', icon: '' },
+  { value: 13, label: 'Water heater', icon: '' },
+  { value: 14, label: 'Wifi ', icon: '' },
+  { value: 15, label: 'WC ', icon: '' },
+  { value: 16, label: 'Wardrobe ', icon: '' },
+  { value: 17, label: 'Washing machine', icon: '' }
+  // {value:18, label: '', icon: ''},
+  // {value:19, label: '', icon: ''},
+  // {value:20, label: '', icon: ''},
+  // {value:21, label: '', icon: ''},
+]
