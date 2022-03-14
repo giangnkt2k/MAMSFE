@@ -76,8 +76,6 @@ export default {
 
         const res = await login(this.formData)
         if (res.data.data.access_token) {
-          // eslint-disable-next-line no-console
-          console.log(res.data.data.access_token)
           const token = res.data.data.access_token
           const currentUser = res.data.data.profile
           this.$store.commit('auth/setAuthenticate', token)
@@ -85,11 +83,9 @@ export default {
           this.redirectByAuth()
           this.$store.commit('pages/setLoading', false)
         }
-        // this.$router.push({ path: '/' })
-        // eslint-disable-next-line no-console
       } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(e)
+        this.$message.error('Wrong email or password')
+        this.$store.commit('pages/setLoading', false)
       }
     },
     redirectByAuth () {

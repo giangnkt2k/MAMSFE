@@ -1,50 +1,103 @@
 <template>
-  <div class="md:container md:mx-auto pt-6">
+  <div class="md:container md:mx-auto pt-6 justify-center">
     <el-table
       :data="propsTableData"
-      style="width: 100%"
       border
       :default-sort="{prop: 'id', order: 'descending'}"
+      class="displayByWidth"
     >
       <template v-for="(col, index) in propsTableHeader">
         <el-table-column
+          v-if="col.title !== 'Status' && col.title !== 'Picture'"
           :key="index"
           :label="col.title"
-          width="170"
-          sortable
         >
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row[col.field] }}</span>
+            <span class="rowSpan">{{ scope.row[col.field] }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="col.title === 'Status'"
+          :key="index"
+          :label="col.title"
+        >
+          <template slot-scope="scope">
+            <span class="rowSpan">
+              <el-tag v-if="scope.row[col.field] =='ACTIVE'" type="success"> {{ scope.row[col.field] }}</el-tag>
+              <el-tag v-if="scope.row[col.field] !=='ACTIVE'" type="danger"> {{ scope.row[col.field] }}</el-tag>
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="col.field === 'thumbnail_url'"
+          :key="index"
+          :label="col.title"
+        >
+          <template slot-scope="scope">
+            <span class="rowSpan">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src=" scope.row[col.field]"
+                fit="contain"
+              />
+            </span>
           </template>
         </el-table-column>
       </template>
       <el-table-column
         width="180"
-        label="Operations"
+        label="Actions"
       >
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="handleEdit(scope.row)"
           >
             Edit
           </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+          <el-popconfirm
+            title="Are you sure to delete this?"
+            @confirm="handleDelete(scope.row.id)"
           >
-            Delete
-          </el-button>
+            <el-button
+              slot="reference"
+              size="mini"
+              type="danger"
+            >
+              Delete
+            </el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
-    <div class="block">
+
+    <el-card
+      v-for="(item, index) in propsTableData"
+      :key="index"
+      class="box-card displayByWidthMobile"
+    >
+      <img v-if="item['thumbnail_url']" :src="item['thumbnail_url']" class="image">
+      <div v-for="(title, indexTitle) in propsTableHeader" :key="indexTitle" class="text item flexing">
+        <div class="titleHeader font-black">
+          <span v-if="title.title !== 'Picture'">{{ title.title }}</span>
+        </div>
+        <div class="ItemValue">
+          <span v-if="title.title !== 'Picture'"> {{ item[title.field] }}</span>
+        </div>
+      </div>
+      <el-button
+        size="mini"
+        @click="handleEdit(index, item)"
+      >
+        Edit
+      </el-button>
+    </el-card>
+    <div>
       <el-pagination
-        :current-page.sync="CurrentPage"
+        :current-page="currentPage"
         :page-sizes="propsPageSizes"
         :page-size="propsPageSize"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next"
         :total="propsTotalItems"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -76,17 +129,22 @@ export default {
       default: 1,
       required: true
     },
+    // propsHiddenDelete: {
+    //   type: Boolean,
+    //   required: true,
+    //   default: true
+    // },
     propsPageSizes: {
       type: [Array, Object],
       required: true,
       default: () => {
-        return []
+        return [10, 50, 100]
       }
     },
     propsPageSize: {
       type: Number,
       default: null,
-      required: true
+      required: 10
     },
     propsTotalItems: {
       type: Number,
@@ -94,9 +152,15 @@ export default {
       required: true
     }
   },
-  computed: {
-    CurrentPage () {
-      return this.propsCurrentPage
+  data () {
+    return {
+      currentPage: null
+    }
+  },
+  watch: {
+    propsCurrentPage (page) {
+      // eslint-disable-next-line no-console
+      this.currentPage = page
     }
   },
   methods: {
@@ -119,5 +183,29 @@ export default {
 </script>
 
 <style>
+.rowSpan {
+  word-break: break-word !important;
+}
+.cell {
+  word-break: break-word !important;
+}
+.displayByWidthMobile {
+  display: none;
+}
+.flexing {
+  display: flex;
+  border: none;
+  align-items: center;
+  justify-content: space-between;
+}
+@media only screen and (max-width: 500px) {
+  .displayByWidth {
+    display: none;
+  }
 
+  .displayByWidthMobile {
+    display: block;
+    margin-bottom: 5px;
+  }
+}
 </style>

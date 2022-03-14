@@ -1,6 +1,6 @@
 require('dotenv').config()
 const baseApi = process.env.BASE_API || 'https://atmtc-api.vw-dev.com/'
-
+const imgLink = process.env.IMG_LINK || 'https://'
 export default {
   server: {
     port: 3000,
@@ -9,7 +9,8 @@ export default {
   mode: 'universal',
 
   env: {
-    baseApi
+    baseApi,
+    imgLink
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
