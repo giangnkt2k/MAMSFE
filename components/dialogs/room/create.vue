@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="Create Building"
+      title="Create Room"
       :visible.sync="dialogVisible"
       append-to-body
     >
@@ -10,9 +10,9 @@
         tag="div"
       >
         <div class="row-input grid grid-cols-7 gap-4">
-          <div class="col-span-7 md:col-span-3">
+          <div class="col-span-7">
             <div class="mams-label">
-              Building name
+              Room name
             </div>
             <validation-provider
               v-slot="{ errors }"
@@ -27,68 +27,20 @@
               </div>
             </validation-provider>
           </div>
-          <div class="col-span-7 mams-label md:col-span-2">
-            <div class="mams-label">
-              Building floor
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="building floor"
-              :rules="{ required: true}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-input v-model="formData.floor" placeholder="Please input number of floor" />
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
-          <div class="col-span-7 mams-label md:col-span-2">
-            <div class="mams-label">
-              Building type
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="building type"
-              :rules="{ required: true}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-select v-model="formData.type_building" class="item-input" placeholder="Select building type">
-                <el-option
-                  v-for="(item, index) in optionsBuildingType"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
         </div>
         <div class="row-input grid grid-cols-3 gap-4">
           <div class="col-span-3 mams-label md:col-span-1">
             <div class="mams-label">
-              City/Province
+              Price (VND)
             </div>
             <validation-provider
               v-slot="{ errors }"
-              name="city"
-              :rules="{ required: true}"
+              name="price"
+              :rules="{ required: true, numeric: true}"
               class="mb-3"
               tag="div"
             >
-              <el-select v-model="formData.city" class="item-input" filterable placeholder="Select district">
-                <el-option
-                  v-for="(item, index) in optionsCities"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <el-input v-model="formData.price" placeholder="Please input price" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -96,23 +48,16 @@
           </div>
           <div class="col-span-3 mams-label md:col-span-1">
             <div class="mams-label">
-              District
+              Acreage (m2)
             </div>
             <validation-provider
               v-slot="{ errors }"
-              name="district"
-              :rules="{ required: true}"
+              name="acreage"
+              :rules="{ required: true, numeric: true}"
               class="mb-3"
               tag="div"
             >
-              <el-select v-model="formData.district" class="item-input" filterable placeholder="Select district">
-                <el-option
-                  v-for="(item, index) in optionsDistricts"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <el-input v-model="formData.acreage" placeholder="Please input acreage" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -120,140 +65,39 @@
           </div>
           <div class="col-span-3 mams-label md:col-span-1">
             <div class="mams-label">
-              Commune
+              Number of pepple
             </div>
             <validation-provider
               v-slot="{ errors }"
-              name="commune"
-              :rules="{ required: true}"
+              name="number of pepple"
+              :rules="{ required: true, numeric: true}"
               class="mb-3"
               tag="div"
             >
-              <el-select v-model="formData.commune" class="item-input" placeholder="Select commune">
-                <el-option
-                  v-for="(item, index) in optionsCommunes"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <el-input v-model="formData.number_of_people" placeholder="Please input umber of pepple" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
             </validation-provider>
           </div>
         </div>
-        <div class="row-input grid grid-cols-4 gap-4">
-          <div class=" col-start-1 col-end-4">
+        <div class="row-input grid grid-cols-7 gap-4">
+          <div class="col-span-7">
             <div class="mams-label">
-              Building address
+              Date empty
             </div>
             <validation-provider
               v-slot="{ errors }"
-              name="building type"
+              name="building name"
               :rules="{ required: true}"
               class="mb-3"
               tag="div"
             >
-              <el-input v-model="formData.address" placeholder="Please input building address" style="width: 100%;" />
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
-
-          <div class=" col-start-1 col-end-4 md:col-start-4">
-            <div class="mams-label">
-              Rental form
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="rental form"
-              :rules="{ required: true}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-select v-model="formData.rental_form" class="item-input" placeholder="Select rental form">
-                <el-option
-                  v-for="(item, index) in optionsRentalForm"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
-        </div>
-
-        <div class="row-input grid grid-cols-2 gap-4">
-          <div class="col-span-2 md:col-span-1">
-            <div class="mams-label">
-              Electricity bill per 1 kwH
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="electricity bill per 1 kwH"
-              :rules="{ required: true, numeric: true,}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-input v-model="formData.e_money_1kwh" type="number" placeholder="Number only" />
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
-          <div class="col-span-2 mams-label md:col-span-1">
-            <div class="mams-label">
-              Water bill per 1 block
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="water bill per 1 block"
-              :rules="{ required: true, numeric: true,}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-input v-model="formData.w_money_1block" type="number" placeholder="Number only" />
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
-        </div>
-        <div class="row-input grid grid-cols-2 gap-4">
-          <div class="col-span-2 md:col-span-1">
-            <div class="mams-label">
-              Date of recording electricity and water indicator
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="date of recording electricity and water indicator"
-              :rules="{ required: true, numeric: true,}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-input v-model="formData.date_record_ew" placeholder="Please input date record ew" />
-              <div class="text-error">
-                {{ errors[0] }}
-              </div>
-            </validation-provider>
-          </div>
-          <div class="col-span-2 mams-label md:col-span-1">
-            <div class="mams-label">
-              Closing date - charge
-            </div>
-            <validation-provider
-              v-slot="{ errors }"
-              name="closing date - charge"
-              :rules="{ required: true, numeric: true,}"
-              class="mb-3"
-              tag="div"
-            >
-              <el-input v-model="formData.date_charge" placeholder="Please input date charge" />
+              <el-date-picker
+                v-model="formData.date_empty"
+                type="date"
+                placeholder="Pick a day"
+              />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -337,19 +181,15 @@ export default {
       dialogVisibleImage: false,
       formData: {
         name: '',
-        type_building: '',
-        address: '',
-        rental_form: '',
-        city: '',
-        district: '',
-        w_money_1block: '',
-        e_money_1kwh: '',
-        commune: '',
+        price: '',
+        acreage: '',
+        number_of_people: '',
+        deposit: '',
+        date_empty: '',
         rules: [],
         utilities: [],
         detail: '',
-        images: [],
-        floor: ''
+        images: []
       },
       dialogImageUrl: '',
       optionsBuildingType: [{

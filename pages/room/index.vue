@@ -1,20 +1,71 @@
 <template>
   <div>
     <div class="md:container md:mx-auto  pt-6 px-6 md:px-2">
-      <div class="block mb-8 grid grid-cols-6 gap-4 items-center">
-        <div class="w-80 search-div col-start-1 col-end-8  md:col-end-4 flex flex-row">
-          <el-input
-            v-model="key_search"
-            placeholder="Type to search"
-          />
-          <el-button class="ml-3" icon="el-icon-search" @click="handleSearch" />
-        </div>
-        <div class="create-div col-start-1 md:col-start-8 col-end-8">
+      <el-card class="block  py-2">
+        <div class="row-btn-room">
+          <el-dropdown class="mr-2">
+            <el-button type="primary">
+              Bill Option<i class="el-icon-arrow-down el-icon--right" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>Automatic invoice generation</el-dropdown-item>
+              <el-dropdown-item>Customize invoice</el-dropdown-item>
+              <el-dropdown-item>Print invoice</el-dropdown-item>
+              <el-dropdown-item>Send Invoice</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-button type="primary">
+            Price list configuration
+          </el-button>
           <el-button type="success" @click="openDialog">
             Create Building
           </el-button>
         </div>
-      </div>
+        <div class="row-floo my-3 grid grid-cols-6 gap-4">
+          <el-select
+            v-model="building_id"
+            filterable
+            clearable
+            placeholder="Select building"
+            class="object-center col-start-1 col-end-6  md:col-end-4"
+            style="width: 100%;"
+          >
+            <el-option
+              v-for="(item, index) in optionsBuildings"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+          <el-select
+            v-model="floor"
+            :disabled="building_id === ''"
+            filterable
+            placeholder="Select floor"
+            class="object-center mr-3 col-start-1 col-end-6  md:col-start-4 col-end-5"
+            style="width: 100%;"
+          >
+            <el-option
+              v-for="(item, index) in optionFloors"
+              :key="index"
+              :label="'Floor '+ item"
+              :value="item"
+            />
+          </el-select>
+          <el-button :disabled="floor === ''" class="object-center mr-3 col-start-1 col-end-6  md:col-start-6 col-end-6" icon="el-icon-search" @click="fetchData" />
+        </div>
+      </el-card>
+      <el-card class="my-5">
+        <div class="block grid grid-cols-6 gap-4 items-center mt-3s">
+          <div class="w-80 search-div col-start-1 col-end-8  md:col-end-4 flex flex-row">
+            <el-input
+              v-model="key_search"
+              placeholder="Type to search"
+            />
+            <el-button class="ml-3" icon="el-icon-search" @click="handleSearch" />
+          </div>
+        </div>
+      </el-card>
       <components-table
         :props-table-data="tableData"
         :props-table-header="tableHeader"
@@ -28,7 +79,7 @@
         @handle-current-change="handleCurrentChange"
       />
     </div>
-    <dialogs-create-building
+    <create
       :props-dialog-visible="dialogPop"
       @handle-submit="handleCreate"
       @handle-import-image="handleImportImage"
@@ -45,9 +96,10 @@
 
 <script>
 import * as room from '@/api/room'
+import * as building from '@/api/building'
 import ComponentsTable from '@/components/tableCURD/index.vue'
-import DialogsCreateBuilding from '@/components/dialogs/building/dialogsCreateBuilding.vue'
-import edit from '@/components/dialogs/building/edit.vue'
+import create from '@/components/dialogs/room/create.vue'
+import edit from '@/components/dialogs/room/edit.vue'
 import EventBus from '@/utils/eventBus'
 import { CITIES, DISTRICTS } from '@/configs/valuesSelect.js'
 import { COMMUNES } from '@/configs/communes.js'
@@ -57,7 +109,7 @@ export default {
   name: 'BuildingIndex',
   components: {
     ComponentsTable,
-    DialogsCreateBuilding,
+    create,
     edit
   },
   mixins: [initToken],
@@ -108,42 +160,45 @@ export default {
           title: 'Status'
         }
       ],
-      optionsBuildingType: [{
-        value: 1,
-        label: 'Shop, kiot'
-      }, {
-        value: 2,
-        label: 'Motel'
-      }, {
-        value: 3,
-        label: 'Whole house'
-      }, {
-        value: 4,
-        label: 'Dormitory'
-      }, {
-        value: 5,
-        label: 'Other'
-      }],
-      optionsRentalForm: [{
-        value: 1,
-        label: 'Room cover'
-      },
-      {
-        value: 2,
-        label: 'Dormitory'
-      }],
+      building_id: '',
+      floor: '',
       // pagination default
       currentPage: 1,
       pageSizes: [10, 50, 100],
       perPage: 5,
       totalItems: 100,
-      imageList: []
+      imageList: [],
+      optionsBuildings: [],
+      optionFloors: null
+    }
+  },
+  watch: {
+    building_id () {
+      const building = this.optionsBuildings.filter(e => e.id === this.building_id)
+      this.optionFloors = parseInt(building[0].floor)
     }
   },
   created () {
     // this.fetchData()
+    this.fetchListBuilding()
   },
   methods: {
+    async fetchListBuilding () {
+      try {
+        this.$store.commit('pages/setLoading', true)
+        const res = await building.list({
+          page: 1,
+          per_page: -1
+        })
+        // eslint-disable-next-line no-console
+        console.log('list building', res.data.data.result)
+        this.optionsBuildings = res.data.data.result ? res.data.data.result : []
+        this.$store.commit('pages/setLoading', false)
+      } catch (e) {
+        this.$message.error('Get list building unsuccess')
+        this.$store.commit('pages/setLoading', false)
+      }
+    },
     openDialog () {
       EventBus.$emit('OpenCreateBuilding', true)
     },
@@ -213,7 +268,9 @@ export default {
         const query = {
           page: this.currentPage,
           per_page: this.perPage,
-          key_search: this.key_search
+          key_search: this.key_search,
+          building_id: this.building_id,
+          floor: this.floor
         }
         if (query.key_search === '') {
           delete query.key_search
@@ -237,7 +294,7 @@ export default {
           this.tableData[i].district = district[0].label
           const rentalForm = this.optionsRentalForm.filter(e => e.value === this.tableData[i].rental_form)
           this.tableData[i].rental_form = rentalForm[0].label
-          const typeBuilding = this.optionsBuildingType.filter(e => e.value === this.tableData[i].type_building)
+          const typeBuilding = this.optionsBuildingsType.filter(e => e.value === this.tableData[i].type_building)
           this.tableData[i].type_building = typeBuilding[0].label
         }
         this.$store.commit('pages/setLoading', false)
