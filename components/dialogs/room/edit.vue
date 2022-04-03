@@ -57,7 +57,7 @@
               class="mb-3"
               tag="div"
             >
-              <el-input v-model="formData.acreage" placeholder="Please input acreage" />
+              <el-input v-model="formData.acreage_m2" placeholder="Please input acreage" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -81,8 +81,8 @@
             </validation-provider>
           </div>
         </div>
-        <div class="row-input grid grid-cols-7 gap-4">
-          <div class="col-span-7">
+        <div class="row-input grid grid-cols-2 gap-4">
+          <div class="col-span-2 mams-label md:col-span-1">
             <div class="mams-label">
               Date empty
             </div>
@@ -97,7 +97,26 @@
                 v-model="formData.date_empty"
                 type="date"
                 placeholder="Pick a day"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
               />
+              <div class="text-error">
+                {{ errors[0] }}
+              </div>
+            </validation-provider>
+          </div>
+          <div class="col-span-2 mams-label md:col-span-1">
+            <div class="mams-label">
+              Deposit
+            </div>
+            <validation-provider
+              v-slot="{ errors }"
+              name="price"
+              :rules="{ required: true, numeric: true}"
+              class="mb-3"
+              tag="div"
+            >
+              <el-input v-model="formData.deposit" placeholder="Please input deposit" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -129,6 +148,7 @@
                 list-type="picture-card"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
+                :file-list="fileList"
               >
                 <i class="el-icon-plus" />
               </el-upload>
@@ -180,9 +200,10 @@ export default {
       dialogVisible: false,
       dialogVisibleImage: false,
       formData: {
+        id: '',
         name: '',
         price: '',
-        acreage: '',
+        acreage_m2: '',
         number_of_people: '',
         deposit: '',
         date_empty: '',
@@ -247,32 +268,24 @@ export default {
     }
   },
   mounted () {
-    EventBus.$on('OpenEditBuilding', (val, data) => {
+    EventBus.$on('OpenEditRoom', (val, data) => {
       this.dialogVisible = val
       this.fileList = []
       // eslint-disable-next-line no-console
       console.log('data', data.data.data)
       const datas = data.data.data
+      // eslint-disable-next-line no-console
+      console.log('formdata', datas)
       this.formData.id = datas.id
       this.formData.name = datas.name
-      this.formData.type_building = datas.type_building
-      this.formData.address = datas.address
-      this.formData.rental_form = datas.rental_form
-      this.formData.city = datas.city
-      this.formData.district = datas.district
-      this.formData.commune = datas.commune
-      this.formData.w_money_1block = datas.w_money_1block
-      this.formData.e_money_1kwh = datas.e_money_1kwh
+      this.formData.price = datas.price
+      this.formData.acreage_m2 = datas.acreage_m2
+      this.formData.number_of_people = datas.number_of_people
+      this.formData.deposit = datas.deposit
+      this.formData.date_empty = datas.date_empty
       this.formData.rules = (datas.rules.slice(1, -1)).split(',').map(e => parseInt(e))
       this.formData.utilities = (datas.utilities.slice(1, -1)).split(',').map(e => parseInt(e))
       this.formData.images = datas.images ? (datas.images.slice(1, -1)).split(',') : []
-      this.formData.decription = datas.decription
-      this.formData.date_charge = datas.date_charge
-      this.formData.date_record_ew = datas.date_record_ew
-      this.formData.detail = datas.detail
-      this.formData.floor = datas.floor
-      // eslint-disable-next-line no-console
-      console.log('formdata', this.formData)
       // eslint-disable-next-line no-console
       console.log('formdataimages', this.formData.images.length, this.formData.images)
       if (this.formData.images.length > 0 && this.formData.images[0] !== '') {

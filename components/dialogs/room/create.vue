@@ -57,7 +57,7 @@
               class="mb-3"
               tag="div"
             >
-              <el-input v-model="formData.acreage" placeholder="Please input acreage" />
+              <el-input v-model="formData.acreage_m2" placeholder="Please input acreage" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -81,8 +81,8 @@
             </validation-provider>
           </div>
         </div>
-        <div class="row-input grid grid-cols-7 gap-4">
-          <div class="col-span-7">
+        <div class="row-input grid grid-cols-2 gap-4">
+          <div class="col-span-2 mams-label md:col-span-1">
             <div class="mams-label">
               Date empty
             </div>
@@ -97,7 +97,26 @@
                 v-model="formData.date_empty"
                 type="date"
                 placeholder="Pick a day"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
               />
+              <div class="text-error">
+                {{ errors[0] }}
+              </div>
+            </validation-provider>
+          </div>
+          <div class="col-span-2 mams-label md:col-span-1">
+            <div class="mams-label">
+              Deposit
+            </div>
+            <validation-provider
+              v-slot="{ errors }"
+              name="price"
+              :rules="{ required: true, numeric: true}"
+              class="mb-3"
+              tag="div"
+            >
+              <el-input v-model="formData.deposit" placeholder="Please input deposit" />
               <div class="text-error">
                 {{ errors[0] }}
               </div>
@@ -146,6 +165,9 @@
             </el-tab-pane>
           </el-tabs>
         </div>
+        <div class="mt-5">
+          Create Many
+        </div>
       </ValidationObserver>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -158,8 +180,6 @@
 <script>
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import EventBus from '@/utils/eventBus'
-import { CITIES, DISTRICTS } from '@/configs/valuesSelect.js'
-import { COMMUNES } from '@/configs/communes.js'
 import { RULES } from '@/configs/rules.js'
 import { UTILITIES } from '@/configs/utilities.js'
 export default {
@@ -182,7 +202,7 @@ export default {
       formData: {
         name: '',
         price: '',
-        acreage: '',
+        acreage_m2: '',
         number_of_people: '',
         deposit: '',
         date_empty: '',
@@ -192,31 +212,6 @@ export default {
         images: []
       },
       dialogImageUrl: '',
-      optionsBuildingType: [{
-        value: 1,
-        label: 'Shop, kiot'
-      }, {
-        value: 2,
-        label: 'Motel'
-      }, {
-        value: 3,
-        label: 'Whole house'
-      }, {
-        value: 4,
-        label: 'Dormitory'
-      }, {
-        value: 5,
-        label: 'Other'
-      }],
-      optionsRentalForm: [{
-        value: 1,
-        label: 'Room cover'
-      },
-      {
-        value: 2,
-        label: 'Dormitory'
-      }],
-      optionsCities: CITIES,
       optionsCommunes: [],
       optionsDistricts: [],
       utilitiesList: UTILITIES,
@@ -232,17 +227,6 @@ export default {
     },
     propsDialogVisible (newVal) {
       this.innerValue = newVal
-    },
-    formData: {
-      handler () {
-        if (this.formData.city !== '') {
-          this.optionsDistricts = DISTRICTS.filter(e => parseInt(e.city) === parseInt(this.formData.city))
-        }
-        if (this.formData.district !== '') {
-          this.optionsCommunes = COMMUNES.filter(e => parseInt(e.district) === parseInt(this.formData.district))
-        }
-      },
-      deep: true
     }
   },
   mounted () {
@@ -277,7 +261,6 @@ export default {
       console.log(file, fileList)
     },
     handlePictureCardPreview (fileImg, list) {
-      this.$emit('handle-import-image', fileImg)
       this.dialogImageUrl = fileImg.url
       this.dialogVisibleImage = true
     },
@@ -301,6 +284,7 @@ export default {
         detail: '',
         images: []
       }
+      this.dialogImageUrl = ''
     }
   }
 }

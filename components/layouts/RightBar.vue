@@ -22,32 +22,34 @@
                 v-for="(item, supIndex) in menu.items"
                 :key="supIndex"
               >
-                <el-menu-item :index="supIndex.toString()">
-                  <nuxt-link
-                    :to="item.link"
-                    exact
-                    class="menu-item-link"
-                  >
+                <nuxt-link
+                  :to="item.link"
+                  exact
+                  :index="supIndex.toString()"
+                  class="menu-item-link"
+                >
+                  <el-menu-item>
                     <span class="link-item">
                       {{ item.title }}
                     </span>
-                  </nuxt-link>
-                </el-menu-item>
+                  </el-menu-item>
+                </nuxt-link>
               </el-menu-item-group>
             </template>
           </el-submenu>
         </template>
         <template v-else>
-          <el-menu-item :key="index+0.1" index="3">
-            <nuxt-link
-              :to="menu.link"
-              exact
-              class="menu-item-link"
-            >
+          <nuxt-link
+            :key="index+0.1"
+            :to="menu.link"
+            exact
+            class="menu-item-link"
+          >
+            <el-menu-item :index="index+0.1">
               <i :class="[menu.icon]" />
               <span class="link-item">  {{ menu.title }}</span>
-            </nuxt-link>
-          </el-menu-item>
+            </el-menu-item>
+          </nuxt-link>
         </template>
       </template>
 

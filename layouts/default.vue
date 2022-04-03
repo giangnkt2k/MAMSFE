@@ -17,6 +17,8 @@
 import RightBar from '@/components/layouts/RightBar.vue'
 import TopBar from '@/components/layouts/TopBar.vue'
 import loading from '@/components/elements/loading/index.vue'
+import EventBus from '@/utils/eventBus'
+import { currentUser } from '@/api/user'
 export default {
   name: 'DefaultLayoutTemplate',
   components: {
@@ -36,9 +38,32 @@ export default {
       return this.$store.getters['pages/getLoading']
     }
   },
+  async created () {
+    await this.fetchCurrentUser()
+    EventBus.$on('responseStatusCode', (statusCode) => {
+      if (statusCode === 401) {
+        this.$store.commit('auth/logout')
+      }
+    })
+    // eslint-disable-next-line no-console
+    console.log('Deploy version: 1.1.0')
+  },
   methods: {
     handleChangeTypeMenu (value) {
       this.isCollapse = value
+    },
+    async fetchCurrentUser () {
+      this.$store.commit('pages/setLoading', true)
+      try {
+        const res = await currentUser()
+        const user = res.data.data || {}
+        this.$store.commit('user/setCurrentUser', user)
+        this.$store.commit('pages/setLoading', false)
+      } catch (e) {
+        this.$store.commit('pages/setLoading', false)
+        const message = e.response.data.message || ''
+        this.$toast.error(message)
+      }
     }
   }
 }

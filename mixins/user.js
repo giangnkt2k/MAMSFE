@@ -1,36 +1,36 @@
 const state = () => ({
   currentUser: {},
-  currentUserRoleNames: [],
-});
+  currentUserRoleNames: []
+})
 
 const getters = {
-  getCurrentUser(state) {
-    return state.currentUser;
+  getCurrentUser (state) {
+    return state.currentUser
   },
-  getCurrentUserRoleNames(state) {
+  getCurrentUserRoleNames (state) {
     if (!state.currentUser ||
       !state.currentUser.roles ||
       !state.currentUser.roles.length) {
-      return;
+      return
     }
-    const currentUserRoleNames = state.currentUser.roles.
-        map((item) => item.name) || [];
-    return currentUserRoleNames;
-  },
-};
+    const currentUserRoleNames = state.currentUser.roles
+      .map(item => item.name) || []
+    return currentUserRoleNames
+  }
+}
 
 const mutations = {
-  setCurrentUser(state, currentUser) {
-    state.currentUser = currentUser;
-  },
-};
+  setCurrentUser (state, currentUser) {
+    state.currentUser = currentUser
+  }
+}
 
-const actions = {};
+const actions = {}
 
 export default {
   namespaced: true,
   state,
   getters,
   mutations,
-  actions,
-};
+  actions
+}

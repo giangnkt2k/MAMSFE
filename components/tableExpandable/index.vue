@@ -5,10 +5,49 @@
       border
       :default-sort="{prop: 'id', order: 'descending'}"
       class="displayByWidth"
+      :row-class-name="tableRowClassName"
     >
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <div class="ml-5">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleRenting(scope.row)"
+            >
+              Renting
+            </el-button>
+            <el-button
+              size="mini"
+              style="background: #bf7cb9; borfer-colot: #bf7cb9; color: #fff;"
+              @click="handleDeposit(scope.row)"
+            >
+              Deposit
+            </el-button>
+            <el-button
+              size="mini"
+              @click="handleEdit(scope.row)"
+            >
+              Edit
+            </el-button>
+            <el-popconfirm
+              title="Are you sure to delete this?"
+              @confirm="handleDelete(scope.row.id)"
+            >
+              <el-button
+                slot="reference"
+                size="mini"
+                type="danger"
+              >
+                Delete
+              </el-button>
+            </el-popconfirm>
+          </div>
+        </template>
+      </el-table-column>
       <template v-for="(col, index) in propsTableHeader">
         <el-table-column
-          v-if="col.title !== 'Status' && col.title !== 'Picture'"
+          v-if="col.title !== 'Status' && col.title !== 'Avatar'"
           :key="index"
           :label="col.title"
         >
@@ -29,6 +68,15 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="col.title === 'Avatar'"
+          :key="index"
+          :label="col.title"
+        >
+          <template slot-scope="scope">
+            <img :src="(scope.row[col.field])">
+          </template>
+        </el-table-column>
+        <el-table-column
           v-if="col.field === 'thumbnail_url'"
           :key="index"
           :label="col.title"
@@ -37,38 +85,13 @@
             <span class="rowSpan">
               <el-image
                 style="width: 100px; height: 100px"
-                :src=" scope.row[col.field]"
+                :src="scope.row[col.field]"
                 fit="contain"
               />
             </span>
           </template>
         </el-table-column>
       </template>
-      <el-table-column
-        width="180"
-        label="Actions"
-      >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.row)"
-          >
-            Edit
-          </el-button>
-          <el-popconfirm
-            title="Are you sure to delete this?"
-            @confirm="handleDelete(scope.row.id)"
-          >
-            <el-button
-              slot="reference"
-              size="mini"
-              type="danger"
-            >
-              Delete
-            </el-button>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
     </el-table>
 
     <el-card
@@ -177,6 +200,22 @@ export default {
     },
     handleCurrentChange (val) {
       this.$emit('handle-current-change', val)
+    },
+    handleRenting (val) {
+      this.$emit('handle-renting', val)
+    },
+    handleDeposit (val) {
+      this.$emit('handle-deposit', val)
+    },
+    tableRowClassName ({ row, rowIndex }) {
+      // eslint-disable-next-line no-console
+      console.log('row==>', row)
+      if (row.rent === 1) {
+        return 'rent-row'
+      } else if (row.rent === 2) {
+        return 'deposit-row'
+      }
+      return ''
     }
   }
 }
@@ -208,4 +247,11 @@ export default {
     margin-bottom: 5px;
   }
 }
+ .el-table .deposit-row {
+    background: #f0b4eb;
+  }
+
+  .el-table .rent-row {
+    background: #b8b9b8;
+  }
 </style>

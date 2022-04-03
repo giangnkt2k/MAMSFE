@@ -2,32 +2,20 @@
   <div>
     <div class="md:container md:mx-auto  pt-6 px-6 md:px-2">
       <el-card class="block  py-2">
-        <div class="row-btn-room">
-          <el-dropdown class="mr-2">
-            <el-button type="primary">
-              Bill Option<i class="el-icon-arrow-down el-icon--right" />
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>Automatic invoice generation</el-dropdown-item>
-              <el-dropdown-item>Customize invoice</el-dropdown-item>
-              <el-dropdown-item>Print invoice</el-dropdown-item>
-              <el-dropdown-item>Send Invoice</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <el-button type="primary">
-            Price list configuration
-          </el-button>
-          <el-button :disabled="(typeof building_id !== 'number' || floor === '')" type="success" @click="openDialog">
-            Create Room
-          </el-button>
-        </div>
         <div class="row-floo my-3 grid grid-cols-6 gap-4">
+          <div class="block col-start-1 col-end-6  md:col-end-2">
+            <el-date-picker
+              v-model="month"
+              type="month"
+              placeholder="Pick a month"
+            />
+          </div>
           <el-select
             v-model="building_id"
             filterable
             clearable
             placeholder="Select building"
-            class="object-center col-start-1 col-end-6  md:col-end-4"
+            class="object-center col-start-1 col-end-6 md:col-start-2  md:col-end-4"
             style="width: 100%;"
             @clear="handleClearBuildingId"
           >
@@ -56,18 +44,6 @@
           <el-button :disabled="floor === ''" class="object-center mr-3 col-start-1 col-end-6  md:col-start-6 col-end-6" icon="el-icon-search" @click="fetchData" />
         </div>
       </el-card>
-      <el-card class="my-5">
-        <div class="block grid grid-cols-6 gap-4 items-center mt-3s">
-          <div class="w-80 search-div col-start-1 col-end-8  md:col-end-4 flex flex-row">
-            <el-input
-              v-model="key_search"
-              :disabled="(typeof building_id !== 'number' || floor === '')"
-              placeholder="Type to search"
-            />
-            <el-button :disabled="(typeof building_id !== 'number' || floor === '')" class="ml-3" icon="el-icon-search" @click="handleSearch" />
-          </div>
-        </div>
-      </el-card>
       <components-table
         :props-table-data="tableData"
         :props-table-header="tableHeader"
@@ -75,8 +51,9 @@
         :props-page-sizes="pageSizes"
         :props-page-size="perPage"
         :props-total-items="totalItems"
+        :props-hide-edit="'true'"
+        :props-hide-delete="'true'"
         @handle-edit="handleEdit"
-        @handle-delete="handleDelete"
         @handle-size-change="handleSizeChange"
         @handle-current-change="handleCurrentChange"
         @handle-renting="handleRenting"
@@ -135,44 +112,29 @@ export default {
           title: 'ID'
         },
         {
-          field: 'name',
-          title: 'Name'
-        },
-        {
           field: 'building',
           title: 'Building'
         },
         {
-          field: 'floor_id',
+          field: 'floor',
           title: 'Floor'
         },
         {
-          field: 'number_of_people',
-          title: 'Number Of People'
+          field: 'room',
+          title: 'Room'
         },
         {
-          field: 'price',
-          title: 'Price'
+          field: 'old_number',
+          title: 'Old number'
         },
         {
-          field: 'acreage_m2',
-          title: 'Acreage (m2)'
-        },
-        {
-          field: 'deposit',
-          title: 'Deposit'
-        },
-        {
-          field: 'date_empty',
-          title: 'Date empty'
+          field: 'new_number',
+          title: 'New number'
         }
-        // {
-        //   field: 'status',
-        //   title: 'Status'
-        // }
       ],
       building_id: '',
       floor: '',
+      month: '',
       // pagination default
       currentPage: 1,
       pageSizes: [10, 50, 100],

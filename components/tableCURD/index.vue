@@ -8,7 +8,7 @@
     >
       <template v-for="(col, index) in propsTableHeader">
         <el-table-column
-          v-if="col.title !== 'Status' && col.title !== 'Picture'"
+          v-if="col.title !== 'Status' && col.title !== 'Avatar'"
           :key="index"
           :label="col.title"
         >
@@ -29,6 +29,15 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="col.title === 'Avatar'"
+          :key="index"
+          :label="col.title"
+        >
+          <template slot-scope="scope">
+            <img :src="(scope.row[col.field])">
+          </template>
+        </el-table-column>
+        <el-table-column
           v-if="col.field === 'thumbnail_url'"
           :key="index"
           :label="col.title"
@@ -37,7 +46,7 @@
             <span class="rowSpan">
               <el-image
                 style="width: 100px; height: 100px"
-                :src=" scope.row[col.field]"
+                :src="scope.row[col.field]"
                 fit="contain"
               />
             </span>
@@ -50,16 +59,25 @@
       >
         <template slot-scope="scope">
           <el-button
+            v-if="propsHideEdit !== 'true'"
             size="mini"
             @click="handleEdit(scope.row)"
           >
             Edit
+          </el-button>
+          <el-button
+            v-if="propsHideSave !== 'true'"
+            size="mini"
+            @click="handleSave(scope.row)"
+          >
+            Save
           </el-button>
           <el-popconfirm
             title="Are you sure to delete this?"
             @confirm="handleDelete(scope.row.id)"
           >
             <el-button
+              v-if="propsHideDelete !== 'true'"
               slot="reference"
               size="mini"
               type="danger"
@@ -89,7 +107,7 @@
         size="mini"
         @click="handleEdit(index, item)"
       >
-        Edit
+        Edits
       </el-button>
     </el-card>
     <div>
@@ -127,6 +145,21 @@ export default {
     propsCurrentPage: {
       type: Number,
       default: 1,
+      required: true
+    },
+    propsHideEdit: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    propsHideDelete: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    propsHideSave: {
+      type: Boolean,
+      default: false,
       required: true
     },
     // propsHiddenDelete: {
