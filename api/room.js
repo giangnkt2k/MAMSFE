@@ -4,6 +4,9 @@ export const list = async (params = {}) => {
   return await axios.get('room', { params })
 }
 
+export const listWaterCollections = async (params = {}) => {
+  return await axios.get('room/collectWater', { params })
+}
 export const add = async (params = {}) => {
   return await axios.post('room', params)
 }

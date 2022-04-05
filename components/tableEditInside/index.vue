@@ -8,7 +8,7 @@
     >
       <template v-for="(col, index) in propsTableHeader">
         <el-table-column
-          v-if="col.title !== 'Status' && col.title !== 'Avatar'"
+          v-if="col.title !== 'Status' && col.title !== 'New number'"
           :key="index"
           :label="col.title"
         >
@@ -29,12 +29,12 @@
           </template>
         </el-table-column>
         <el-table-column
-          v-if="col.title === 'Avatar'"
+          v-if="col.field === 'new_number'"
           :key="index"
           :label="col.title"
         >
           <template slot-scope="scope">
-            <img :src="(scope.row[col.field])">
+            <el-input v-model="scope.row[col.field]" placeholder="Please input" />
           </template>
         </el-table-column>
         <el-table-column
@@ -59,32 +59,12 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="propsHideEdit !== 'true'"
-            size="mini"
-            @click="handleEdit(scope.row)"
-          >
-            Edit
-          </el-button>
-          <!-- <el-button
             v-if="propsHideSave !== 'true'"
             size="mini"
             @click="handleSave(scope.row)"
           >
             Save
-          </el-button> -->
-          <el-popconfirm
-            title="Are you sure to delete this?"
-            @confirm="handleDelete(scope.row.id)"
-          >
-            <el-button
-              v-if="propsHideDelete !== 'true'"
-              slot="reference"
-              size="mini"
-              type="danger"
-            >
-              Delete
-            </el-button>
-          </el-popconfirm>
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -187,7 +167,8 @@ export default {
   },
   data () {
     return {
-      currentPage: null
+      currentPage: null,
+      currentDate: ''
     }
   },
   watch: {

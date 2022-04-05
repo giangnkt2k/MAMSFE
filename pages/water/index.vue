@@ -7,6 +7,7 @@
             <el-date-picker
               v-model="month"
               type="month"
+              :format="'yyyy-MM'"
               placeholder="Pick a month"
             />
           </div>
@@ -85,7 +86,7 @@ import * as client from '@/api/client'
 import * as contract from '@/api/contract'
 import * as rental from '@/api/rental'
 
-import ComponentsTable from '@/components/tableExpandable/index.vue'
+import ComponentsTable from '@/components/tableEditInside/index.vue'
 import create from '@/components/dialogs/room/create.vue'
 import edit from '@/components/dialogs/room/edit.vue'
 import renting from '@/components/dialogs/room/renting.vue'
@@ -116,7 +117,7 @@ export default {
           title: 'Building'
         },
         {
-          field: 'floor',
+          field: 'floor_id',
           title: 'Floor'
         },
         {
@@ -142,7 +143,8 @@ export default {
       totalItems: 100,
       imageList: [],
       optionsBuildings: [],
-      optionFloors: []
+      optionFloors: [],
+      dateFinal: 1
     }
   },
   watch: {
@@ -150,6 +152,7 @@ export default {
       if (typeof this.building_id === 'number') {
         const building = this.optionsBuildings.filter(e => e.id === this.building_id)
         this.optionFloors = parseInt(building[0].floor)
+        this.dateFinal = building[0].date_record_ew
         // eslint-disable-next-line no-console
         console.log(typeof this.building_id)
       } else {
@@ -160,6 +163,8 @@ export default {
   },
   created () {
     // this.fetchData()
+    const now = new Date()
+    this.month = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).toISOString().slice(0, 10)
     this.fetchListBuilding()
   },
   methods: {
@@ -302,12 +307,13 @@ export default {
           per_page: this.perPage,
           key_search: this.key_search,
           building_id: this.building_id,
-          floor: this.floor
+          floor_id: this.floor,
+          date: this.month.slice(0, -3) + '-' + this.dateFinal
         }
         if (query.key_search === '') {
           delete query.key_search
         }
-        const res = await room.list(query)
+        const res = await room.listWaterCollections(query)
         // eslint-disable-next-line no-console
         console.log('pagin', res.data.data.pagination)
         const pagination = res.data.data.pagination || {}
@@ -319,8 +325,11 @@ export default {
         data.length > 0 && data.map((e) => {
           const item = {
             ...e,
-            building: e.building.name
-
+            building: e.building.name,
+            floor_id: e.floor_id,
+            room: e.name,
+            old_number: (e.water[1]) ? e.water[1].new_number : 0,
+            new_number: 0
           }
           return formData.push(item)
         })
