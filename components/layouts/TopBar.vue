@@ -7,12 +7,10 @@
       @select="handleSelect"
     >
       <span class="icon-nav">
-        <el-switch v-model="isCollapse" active-color="#304156" />
+        <!-- <el-switch v-model="isCollapse" active-color="#304156" /> -->
+        <i v-if="isCollapse=== false" class="el-icon-s-fold" @click="changeTypeMenu(true)" />
+        <i v-if="isCollapse !== false" class="el-icon-s-unfold" @click="changeTypeMenu(false)" />
       </span>
-      <span class="logo-nav">
-        <h1>MAMS</h1>
-      </span>
-
       <el-submenu index="2">
         <template slot="title">
           GiangNKT
@@ -42,19 +40,14 @@ export default {
     required: true,
     default: false
   },
-  watch: {
-    isCollapse () {
-      // eslint-disable-next-line no-console
-      this.changeTypeMenu()
-    }
-  },
   methods: {
     handleSelect (key, keyPath) {
       // eslint-disable-next-line no-console
       console.log(key, keyPath)
     },
-    changeTypeMenu () {
-      this.$emit('handle-change-type-menu', this.isCollapse)
+    changeTypeMenu (val) {
+      this.isCollapse = val
+      this.$emit('handle-change-type-menu', val)
     },
     logout () {
       // eslint-disable-next-line no-console

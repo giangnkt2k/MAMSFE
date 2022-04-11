@@ -51,5 +51,12 @@ export default [
         link: '/electric'
       }
     ]
+  },
+  {
+    routerName: '',
+    title: 'Bill',
+    link: '/bill',
+    icon: 'el-icon-price-tag',
+    active: false
   }
 ]

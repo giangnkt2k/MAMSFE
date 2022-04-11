@@ -8,7 +8,7 @@
     >
       <template v-for="(col, index) in propsTableHeader">
         <el-table-column
-          v-if="col.title !== 'Status' && col.title !== 'New number'"
+          v-if="col.title !== 'Service price' && col.title !== 'New number' && col.title !== 'Status bill'"
           :key="index"
           :label="col.title"
         >
@@ -17,24 +17,28 @@
           </template>
         </el-table-column>
         <el-table-column
-          v-if="col.title === 'Status'"
+          v-if="col.title === 'Service price'"
+          :key="index"
+          :label="col.title"
+        >
+          <template slot-scope="scope">
+            <ul>
+              <li v-for="(item, index1) in scope.row[col.field]" :key="index1">
+                {{ item.label }} : {{ item.price }}
+              </li>
+            </ul>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="col.title === 'Status bill'"
           :key="index"
           :label="col.title"
         >
           <template slot-scope="scope">
             <span class="rowSpan">
-              <el-tag v-if="scope.row[col.field] =='ACTIVE'" type="success"> {{ scope.row[col.field] }}</el-tag>
-              <el-tag v-if="scope.row[col.field] !=='ACTIVE'" type="danger"> {{ scope.row[col.field] }}</el-tag>
+              <el-tag v-if="scope.row['status_bill'] === 1" type="success"> Paied </el-tag>
+              <el-tag v-if="scope.row['status_bill'] !== 1" type="danger"> Not paied {{ scope.row[col.field] }} </el-tag>
             </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-if="col.field === 'new_number'"
-          :key="index"
-          :label="col.title"
-        >
-          <template slot-scope="scope">
-            <el-input v-model="scope.row[col.field]" placeholder="Please input" />
           </template>
         </el-table-column>
         <el-table-column
@@ -55,22 +59,23 @@
       </template>
       <el-table-column
         width="180"
-        label="Total"
-      >
-        <template slot-scope="scope">
-          {{ scope.row['new_number'] - scope.row['old_number'] }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        width="180"
         label="Actions"
       >
         <template slot-scope="scope">
           <el-button
+            v-if="!scope.row.created"
             size="mini"
-            @click="handleSave(scope.row, scope.row['new_number'] - scope.row['old_number'])"
+            type="success"
+            @click="handleSave(scope.row)"
           >
-            Save
+            Create Bill
+          </el-button>
+          <el-button
+            v-if="scope.row.created"
+            size="mini"
+            @click="handleChageStatusBill(scope.row)"
+          >
+            Check Bill
           </el-button>
         </template>
       </el-table-column>
@@ -194,13 +199,13 @@ export default {
     handleCurrentChange (val) {
       this.$emit('handle-current-change', val)
     },
-    handleSave (item, val) {
-      if (val < 0) {
-        this.$message.error('The new number must be greater than the old number')
-      } else {
-        this.$emit('handle-save', item, val)
-      }
+    handleSave (item) {
+      this.$emit('handle-save', item)
+    },
+    handleChageStatusBill (item) {
+      this.$emit('handle-change-status-bill', item)
     }
+
   }
 }
 </script>

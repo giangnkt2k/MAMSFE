@@ -8,6 +8,7 @@
               v-model="month"
               type="month"
               :format="'yyyy-MM'"
+              value-format="yyyy-MM-dd"
               placeholder="Pick a month"
             />
           </div>
@@ -52,54 +53,31 @@
         :props-page-sizes="pageSizes"
         :props-page-size="perPage"
         :props-total-items="totalItems"
-        :props-hide-edit="'true'"
-        :props-hide-delete="'true'"
-        @handle-edit="handleEdit"
+        :props-hide-edit="true"
+        :props-hide-delete="true"
+        @handle-save="handleSave"
         @handle-size-change="handleSizeChange"
         @handle-current-change="handleCurrentChange"
-        @handle-renting="handleRenting"
-        @handle-deposit="handleDeposit"
       />
     </div>
-    <create
-      :props-dialog-visible="dialogPop"
-      @handle-submit="handleCreate"
-      @handle-import-image="handleImportImage"
-      @handle-remove="handleRemove"
-    />
-    <edit
-      :props-dialog-visible="dialogPopEdit"
-      @handle-submit="handleSubmitEdit"
-      @handle-import-image="handleImportImage"
-      @handle-remove="handleRemove"
-    />
-    <renting
-      @handle-submit="handleRental"
-    />
   </div>
 </template>
 
 <script>
 import * as room from '@/api/room'
 import * as building from '@/api/building'
-import * as client from '@/api/client'
-import * as contract from '@/api/contract'
-import * as rental from '@/api/rental'
+import * as water from '@/api/water'
+// import * as client from '@/api/client'
+// import * as contract from '@/api/contract'
 
 import ComponentsTable from '@/components/tableEditInside/index.vue'
-import create from '@/components/dialogs/room/create.vue'
-import edit from '@/components/dialogs/room/edit.vue'
-import renting from '@/components/dialogs/room/renting.vue'
-import EventBus from '@/utils/eventBus'
+// import EventBus from '@/utils/eventBus'
 import initToken from '~/mixins/auth.js'
 
 export default {
   name: 'BuildingIndex',
   components: {
-    ComponentsTable,
-    create,
-    edit,
-    renting
+    ComponentsTable
   },
   mixins: [initToken],
   data () {
@@ -144,7 +122,8 @@ export default {
       imageList: [],
       optionsBuildings: [],
       optionFloors: [],
-      dateFinal: 1
+      dateFinal: 1,
+      id_water: ''
     }
   },
   watch: {
@@ -164,59 +143,30 @@ export default {
   created () {
     // this.fetchData()
     const now = new Date()
-    this.month = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).toISOString().slice(0, 10)
+    this.month = new Date(Date.UTC(now.getFullYear(), now.getMonth())).toISOString().slice(0, 10)
     this.fetchListBuilding()
   },
   methods: {
-    // renting
-    async handleRenting (val) {
-      // eslint-disable-next-line no-console
-      console.log('val', val)
-      try {
-        const resClients = await client.list({
-          page: 1,
-          per_page: -1
-        })
-        const clients = resClients.data.data.result
-        const resContract = await contract.details(1)
-        const contracts = resContract.data.data
-        const detailData = await room.details(val.id)
-        const roomDetail = detailData.data.data
-        EventBus.$emit('OpenPopRent', true, clients, contracts, roomDetail)
-      } catch (e) {
-        this.$message.error('Open fail')
-        this.$store.commit('pages/setLoading', false)
+    async handleSave (item, val) {
+      if (item.water.length > 0) {
+        const data = item.water.filter(e => e.date === this.month.slice(0, -3) + '-' + this.dateFinal)
+        this.id_water = data[0].id
       }
-    },
-    async handleDeposit (val) {
-      // eslint-disable-next-line no-console
-      console.log('val', val)
       try {
-        const resClients = await client.list({
-          page: 1,
-          per_page: -1
+        this.$store.commit('pages/setLoading', true)
+        await water.update({
+          id: this.id_water,
+          room_id: item.id,
+          old_number: parseInt(item.old_number),
+          new_number: parseInt(item.new_number),
+          date: this.month.slice(0, -3) + '-' + this.dateFinal
+
         })
-        const clients = resClients.data.data.result
-        const resContract = await contract.details(2)
-        const contracts = resContract.data.data
-        const detailData = await room.details(val.id)
-        const roomDetail = detailData.data.data
-        EventBus.$emit('OpenPopRent', true, clients, contracts, roomDetail)
-      } catch (e) {
-        this.$message.error('Open fail')
-        this.$store.commit('pages/setLoading', false)
-      }
-    },
-    async handleRental (query) {
-      try {
-        const res = await rental.add(query)
         // eslint-disable-next-line no-console
-        console.log('data', res)
-        this.$message.success('Create rental success')
-        this.fetchData()
-      } catch (e) {
-        this.$message.error('Open fail')
+        this.$message.success('Save new number success')
         this.$store.commit('pages/setLoading', false)
+      } catch (e) {
+
       }
     },
     async fetchListBuilding () {
@@ -227,76 +177,10 @@ export default {
           per_page: -1
         })
         // eslint-disable-next-line no-console
-        console.log('list building', res.data.data.result)
         this.optionsBuildings = res.data.data.result ? res.data.data.result : []
         this.$store.commit('pages/setLoading', false)
       } catch (e) {
 
-      }
-    },
-    openDialog () {
-      EventBus.$emit('OpenCreateBuilding', true)
-    },
-    async handleEdit (data) {
-      // eslint-disable-next-line no-console
-      console.log('data', data)
-      try {
-        const detailData = await room.details(data.id)
-        EventBus.$emit('OpenEditRoom', true, detailData)
-      } catch (e) {
-        this.$message.error('Create building unsuccess')
-        this.dialogPopEdit = false
-        this.$store.commit('pages/setLoading', false)
-      }
-    },
-    async handleSubmitEdit (data) {
-      try {
-        this.$store.commit('pages/setLoading', true)
-        data.images = this.imageList
-        // eslint-disable-next-line no-console
-        console.log('submit', data)
-        await room.update(data)
-        this.$message.success('Update building success')
-        this.dialogPop = false
-        this.$store.commit('pages/setLoading', false)
-        this.fetchData()
-      } catch (e) {
-        this.$message.error('Update building unsuccess')
-        this.dialogPop = false
-        this.$store.commit('pages/setLoading', false)
-      }
-    },
-    async handleCreate (data) {
-      try {
-        this.$store.commit('pages/setLoading', true)
-        data.images = this.imageList
-        data.building_id = this.building_id
-        data.floor_id = this.floor
-        await room.add(data)
-        this.imageList = []
-        this.$message.success('Create building success')
-        this.dialogPop = false
-        this.$store.commit('pages/setLoading', false)
-        this.fetchData()
-      } catch (e) {
-        this.$message.error('Create building unsuccess')
-        this.dialogPop = false
-        this.$store.commit('pages/setLoading', false)
-      }
-    },
-    async handleDelete (id) {
-      try {
-        this.$store.commit('pages/setLoading', true)
-        const deleted = await room.destroy(id)
-        this.$message.success('Delete building success')
-        // eslint-disable-next-line no-console
-        console.log('del', deleted)
-        this.$store.commit('pages/setLoading', false)
-        this.fetchData()
-      } catch (e) {
-        this.$message.error('Some things happened')
-        this.dialogPop = false
-        this.$store.commit('pages/setLoading', false)
       }
     },
     async fetchData () {
@@ -305,17 +189,14 @@ export default {
         const query = {
           page: this.currentPage,
           per_page: this.perPage,
-          key_search: this.key_search,
           building_id: this.building_id,
           floor_id: this.floor,
           date: this.month.slice(0, -3) + '-' + this.dateFinal
         }
-        if (query.key_search === '') {
-          delete query.key_search
-        }
-        const res = await room.listWaterCollections(query)
         // eslint-disable-next-line no-console
-        console.log('pagin', res.data.data.pagination)
+        console.log('query', query)
+        const res = await room.listWaterCollections(query)
+
         const pagination = res.data.data.pagination || {}
         this.currentPage = pagination.current_page
         this.perPage = pagination.per_page
@@ -328,8 +209,8 @@ export default {
             building: e.building.name,
             floor_id: e.floor_id,
             room: e.name,
-            old_number: (e.water[1]) ? e.water[1].new_number : 0,
-            new_number: 0
+            old_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'old'),
+            new_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'new')
           }
           return formData.push(item)
         })
@@ -344,34 +225,29 @@ export default {
         this.$store.commit('pages/setLoading', false)
       }
     },
+    handleWaterNumber (item, date, type) {
+      if (item.length < 1) {
+        return 0
+      } else if (item.length === 1) {
+        const data = item.filter(e => e.date === date)
+        if (data.length > 0) {
+          return (type === 'old') ? data[0].old_number : data[0].new_number
+        } else {
+          // eslint-disable-next-line no-console
+          console.log('item filter', data[0])
+          return (type === 'old') ? data[0].new_number : 0
+        }
+      } else {
+        const data = item.filter(e => e.date === date)
+        if (data.length > 0) {
+          return (type === 'old') ? data[0].old_number : data[0].new_number
+        }
+      }
+      // eslint-disable-next-line no-console
+      console.log('item, date, type', item, date, type)
+    },
     async handleSearch () {
       await this.fetchData()
-    },
-    async handleImportImage (file) {
-      this.initToken()
-      try {
-        // eslint-disable-next-line no-console
-        const formData = new FormData()
-
-        formData.append('file', file)
-        const image = await room.importFile(formData)
-        // eslint-disable-next-line no-console
-        console.log('img', image)
-        this.imageList.push(image.data.data)
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log('e', e)
-      }
-    },
-    async handleRemove (fileRemove) {
-      this.initToken()
-
-      // eslint-disable-next-line no-console
-      console.log('remove đê', fileRemove)
-      this.imageList = this.imageList.filter(file => file.name !== fileRemove.name)
-      await room.deleteImg(fileRemove.name)
-      // eslint-disable-next-line no-console
-      console.log('remove luôn', this.imageList)
     },
     handleSizeChange (value) {
       this.perPage = value

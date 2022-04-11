@@ -4,9 +4,18 @@ export const list = async (params = {}) => {
   return await axios.get('room', { params })
 }
 
+export const listForBill = async (params = {}) => {
+  return await axios.get('room/indexForBill', { params })
+}
+
 export const listWaterCollections = async (params = {}) => {
   return await axios.get('room/collectWater', { params })
 }
+
+export const listElectricCollections = async (params = {}) => {
+  return await axios.get('room/collectElectric', { params })
+}
+
 export const add = async (params = {}) => {
   return await axios.post('room', params)
 }

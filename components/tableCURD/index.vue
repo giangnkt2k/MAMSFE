@@ -59,25 +59,18 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="propsHideEdit !== 'true'"
+            v-if="propsHideEdit !== true"
             size="mini"
             @click="handleEdit(scope.row)"
           >
             Edit
           </el-button>
-          <!-- <el-button
-            v-if="propsHideSave !== 'true'"
-            size="mini"
-            @click="handleSave(scope.row)"
-          >
-            Save
-          </el-button> -->
           <el-popconfirm
             title="Are you sure to delete this?"
             @confirm="handleDelete(scope.row.id)"
           >
             <el-button
-              v-if="propsHideDelete !== 'true'"
+              v-if="propsHideDelete !== true"
               slot="reference"
               size="mini"
               type="danger"
@@ -153,11 +146,6 @@ export default {
       required: true
     },
     propsHideDelete: {
-      type: Boolean,
-      default: false,
-      required: true
-    },
-    propsHideSave: {
       type: Boolean,
       default: false,
       required: true
