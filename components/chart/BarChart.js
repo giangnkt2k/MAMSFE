@@ -1,25 +1,27 @@
 import { Bar } from 'vue-chartjs'
-// import * as dashboard from '@/api/dashboard.js'
+import * as dashboard from '@/api/dashboard.js'
 
 export default {
   extends: Bar,
   props: ['data', 'options'],
-  mounted () {
+  async mounted () {
     try {
       this.$store.commit('pages/setLoading', true)
-      // const res = await dashboard.statsIdea()
+      const res = await dashboard.clientsInBuilding()
+      // eslint-disable-next-line no-console
+      console.log('res', res.data.data[0])
+      const data = res.data.data[0]
       // const data = res.data.data
-      const newTitle = ['Sunhouse']
       // data.title.length > 0 && data.title.map((tt) => {
       //   const newT = tt.slice(0, 8)
       //   return newTitle.push(newT)
       // })
       const barChartData = {
-        labels: newTitle,
+        labels: data.label,
         datasets: [
           {
             label: 'Client',
-            data: [10],
+            data: data.clients,
             backgroundColor: '#294fc2',
             borderColor: '#294fc2',
             borderWidth: 2
