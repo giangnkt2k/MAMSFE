@@ -3,7 +3,7 @@
     <div class="md:container md:mx-auto  pt-6 px-6 md:px-2">
       <el-card>
         <div class="my-5 text-lg text-xl">
-          <span class="font-semibold text-cyan-800"> Deposit </span>
+          <span class="font-semibold text-cyan-800"> List of Contract </span>
         </div>
         <div class="block mb-8 grid grid-cols-6 gap-4 items-center">
           <div class="w-80 search-div col-start-1 col-end-8  md:col-end-4 flex flex-row">
@@ -35,7 +35,7 @@
       <el-card class="my-5">
         <div>
           <div class="my-5 text-lg text-xl">
-            <span class="font-semibold text-cyan-800"> Deposit Signed </span>
+            <span class="font-semibold text-cyan-800"> List of contracs Signed </span>
           </div>
           <components-table
             :props-table-data="tableDataContractSign"
