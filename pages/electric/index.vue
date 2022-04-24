@@ -10,6 +10,7 @@
               :format="'yyyy-MM'"
               value-format="yyyy-MM-dd"
               placeholder="Pick a month"
+              :picker-options="pickerOptions"
             />
           </div>
           <el-select
@@ -123,7 +124,12 @@ export default {
       optionsBuildings: [],
       optionFloors: [],
       dateFinal: 1,
-      id_electric: ''
+      id_electric: '',
+      pickerOptions: {
+        disabledDate: this.disabledDate,
+        onPick: this.pick
+      },
+      fromDate: ''
     }
   },
   watch: {
@@ -147,21 +153,46 @@ export default {
     this.fetchListBuilding()
   },
   methods: {
+    pick (data) {
+      // eslint-disable-next-line no-console
+      console.log('data', data)
+      this.fromDate = data
+    },
+    disabledDate (date) {
+      // eslint-disable-next-line no-console
+      const now = new Date()
+      if (date < now) {
+        return true
+      }
+      return false
+    },
     async handleSave (item, val) {
       if (item.electric.length > 0) {
         const data = item.electric.filter(e => e.date === this.month.slice(0, -3) + '-' + this.dateFinal)
-        this.id_electric = data[0].id
+        if (data.length > 0) {
+          this.id_electric = data[0].id
+        } else {
+          this.id_water = ''
+        }
       }
       try {
         this.$store.commit('pages/setLoading', true)
-        await electric.update({
-          id: this.id_electric,
-          room_id: item.id,
-          old_number: parseInt(item.old_number),
-          new_number: parseInt(item.new_number),
-          date: this.month.slice(0, -3) + '-' + this.dateFinal
-        })
-        // eslint-disable-next-line no-console
+        if (this.id_electric !== '') {
+          await electric.update({
+            id: this.id_electric,
+            room_id: item.id,
+            old_number: parseInt(item.old_number),
+            new_number: parseInt(item.new_number),
+            date: this.month.slice(0, -3) + '-' + this.dateFinal
+          })
+        } else {
+          await electric.add({
+            room_id: item.id,
+            old_number: parseInt(item.old_number),
+            new_number: parseInt(item.new_number),
+            date: this.month.slice(0, -3) + '-' + this.dateFinal
+          })
+        }
         this.$message.success('Save new number success')
         this.$store.commit('pages/setLoading', false)
       } catch (e) {
@@ -230,23 +261,18 @@ export default {
     handleElectricNumber (item, date, type) {
       if (item.length < 1) {
         return 0
-      } else if (item.length === 1) {
-        const data = item.filter(e => e.date === date)
-        if (data.length > 0) {
-          return (type === 'old') ? data[0].old_number : data[0].new_number
-        } else {
-          // eslint-disable-next-line no-console
-          console.log('item filter', data[0])
-          return (type === 'old') ? data[0].new_number : 0
-        }
       } else {
-        const data = item.filter(e => e.date === date)
-        if (data.length > 0) {
-          return (type === 'old') ? data[0].old_number : data[0].new_number
+        const dataThisMonth = item.filter(e => e.date === date)
+        const dataLastMonth = item.filter(e => e.date !== date)
+
+        if (dataThisMonth.length > 0 && dataLastMonth.length > 0) {
+          return (type === 'old') ? dataLastMonth[0].new_number : dataThisMonth[0].new_number
+        } else if (dataThisMonth.length > 0 && dataLastMonth.length < 1) {
+          return (type === 'old') ? dataThisMonth[0].old_number : dataThisMonth[0].new_number
+        } else if (dataThisMonth.length < 1 && dataLastMonth.length > 0) {
+          return (type === 'old') ? dataLastMonth[0].new_number : 0
         }
       }
-      // eslint-disable-next-line no-console
-      console.log('item, date, type', item, date, type)
     },
     async handleSearch () {
       await this.fetchData()

@@ -24,6 +24,9 @@ export const sendBillEmail = async (params = {}) => {
   return await axios.get('sendBillEmail', { params })
 }
 
+export const sendBillSMS = async (params = {}) => {
+  return await axios.get('sendBillSMS', { params })
+}
 export const update = async (params = {}) => {
   return await axios.put(`bill/${params.id}`, params)
 }

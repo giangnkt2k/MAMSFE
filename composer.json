@@ -1,0 +1,5 @@
+{
+    "require": {
+        "laravel/nexmo-notification-channel": "^2.5"
+    }
+}

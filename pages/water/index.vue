@@ -10,6 +10,7 @@
               :format="'yyyy-MM'"
               value-format="yyyy-MM-dd"
               placeholder="Pick a month"
+              :picker-options="pickerOptions"
             />
           </div>
           <el-select
@@ -123,7 +124,13 @@ export default {
       optionsBuildings: [],
       optionFloors: [],
       dateFinal: 1,
-      id_water: ''
+      id_water: '',
+      pickerOptions: {
+        disabledDate: this.disabledDate,
+        onPick: this.pick
+      },
+      fromDate: ''
+
     }
   },
   watch: {
@@ -147,23 +154,28 @@ export default {
     this.fetchListBuilding()
   },
   methods: {
+    pick (data) {
+      // eslint-disable-next-line no-console
+      console.log('data', data)
+      this.fromDate = data
+    },
+    disabledDate (date) {
+      // eslint-disable-next-line no-console
+      const now = new Date()
+      if (date < now) {
+        return true
+      }
+      return false
+    },
     async handleSave (item, val) {
-      // eslint-disable-next-line no-console
-      // eslint-disable-next-line no-console
-      console.log('waterw==>', item)
       if (item.water.length > 0) {
         const data = item.water.filter(e => e.date === this.month.slice(0, -3) + '-' + this.dateFinal)
-        // eslint-disable-next-line no-console
-        console.log('water==>', data)
         if (data.length > 0) {
           this.id_water = data[0].id
         } else {
           this.id_water = ''
         }
       }
-      // eslint-disable-next-line no-console
-      console.log('item==>', typeof (this.id_water), this.id_water)
-
       try {
         this.$store.commit('pages/setLoading', true)
         if (this.id_water !== '') {
@@ -231,8 +243,8 @@ export default {
             building: e.building.name,
             floor_id: e.floor_id,
             room: e.name,
-            old_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'old')
-            // new_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'new')
+            old_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'old'),
+            new_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'new')
           }
           return formData.push(item)
         })

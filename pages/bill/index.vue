@@ -59,8 +59,10 @@
                   <i class="el-icon-eleme" /> By Email
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-message">
-                By SMS
+              <el-dropdown-item>
+                <div @click="sendingBillSMS">
+                  <i class="el-icon-message" /> By SMS
+                </div>
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-s-promotion">
                 By Telegram
@@ -299,6 +301,20 @@ export default {
       try {
         this.$store.commit('pages/setLoading', true)
         await bill.sendBillEmail({
+          building_id: this.building_id,
+          floor_id: this.floor,
+          date: this.month.slice(0, -3) + '-' + this.dateFinal
+        })
+        this.$message.success('Send bill by email success')
+        this.$store.commit('pages/setLoading', false)
+      } catch (e) {
+
+      }
+    },
+    async sendingBillSMS () {
+      try {
+        this.$store.commit('pages/setLoading', true)
+        await bill.sendBillSMS({
           building_id: this.building_id,
           floor_id: this.floor,
           date: this.month.slice(0, -3) + '-' + this.dateFinal
