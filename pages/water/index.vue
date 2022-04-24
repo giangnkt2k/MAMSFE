@@ -148,20 +148,42 @@ export default {
   },
   methods: {
     async handleSave (item, val) {
+      // eslint-disable-next-line no-console
+      // eslint-disable-next-line no-console
+      console.log('waterw==>', item)
       if (item.water.length > 0) {
         const data = item.water.filter(e => e.date === this.month.slice(0, -3) + '-' + this.dateFinal)
-        this.id_water = data[0].id
+        // eslint-disable-next-line no-console
+        console.log('water==>', data)
+        if (data.length > 0) {
+          this.id_water = data[0].id
+        } else {
+          this.id_water = ''
+        }
       }
+      // eslint-disable-next-line no-console
+      console.log('item==>', typeof (this.id_water), this.id_water)
+
       try {
         this.$store.commit('pages/setLoading', true)
-        await water.update({
-          id: this.id_water,
-          room_id: item.id,
-          old_number: parseInt(item.old_number),
-          new_number: parseInt(item.new_number),
-          date: this.month.slice(0, -3) + '-' + this.dateFinal
+        if (this.id_water !== '') {
+          await water.update({
+            id: this.id_water,
+            room_id: item.id,
+            old_number: parseInt(item.old_number),
+            new_number: parseInt(item.new_number),
+            date: this.month.slice(0, -3) + '-' + this.dateFinal
 
-        })
+          })
+        } else {
+          await water.add({
+            room_id: item.id,
+            old_number: parseInt(item.old_number),
+            new_number: parseInt(item.new_number),
+            date: this.month.slice(0, -3) + '-' + this.dateFinal
+          })
+        }
+
         // eslint-disable-next-line no-console
         this.$message.success('Save new number success')
         this.$store.commit('pages/setLoading', false)
@@ -209,8 +231,8 @@ export default {
             building: e.building.name,
             floor_id: e.floor_id,
             room: e.name,
-            old_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'old'),
-            new_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'new')
+            old_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'old')
+            // new_number: this.handleWaterNumber(e.water, this.month.slice(0, -3) + '-' + this.dateFinal, 'new')
           }
           return formData.push(item)
         })
@@ -228,23 +250,18 @@ export default {
     handleWaterNumber (item, date, type) {
       if (item.length < 1) {
         return 0
-      } else if (item.length === 1) {
-        const data = item.filter(e => e.date === date)
-        if (data.length > 0) {
-          return (type === 'old') ? data[0].old_number : data[0].new_number
-        } else {
-          // eslint-disable-next-line no-console
-          console.log('item filter', data[0])
-          return (type === 'old') ? data[0].new_number : 0
-        }
       } else {
-        const data = item.filter(e => e.date === date)
-        if (data.length > 0) {
-          return (type === 'old') ? data[0].old_number : data[0].new_number
+        const dataThisMonth = item.filter(e => e.date === date)
+        const dataLastMonth = item.filter(e => e.date !== date)
+
+        if (dataThisMonth.length > 0 && dataLastMonth.length > 0) {
+          return (type === 'old') ? dataLastMonth[0].new_number : dataThisMonth[0].new_number
+        } else if (dataThisMonth.length > 0 && dataLastMonth.length < 1) {
+          return (type === 'old') ? dataThisMonth[0].old_number : dataThisMonth[0].new_number
+        } else if (dataThisMonth.length < 1 && dataLastMonth.length > 0) {
+          return (type === 'old') ? dataLastMonth[0].new_number : 0
         }
       }
-      // eslint-disable-next-line no-console
-      console.log('item, date, type', item, date, type)
     },
     async handleSearch () {
       await this.fetchData()
