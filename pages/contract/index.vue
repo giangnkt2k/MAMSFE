@@ -47,7 +47,6 @@
             :props-hide-delete="false"
             :props-total-items="totalItemsContractSign"
             @handle-delete="handleDeleteContractSign"
-            @handle-size-change="handleSizeChangeContractSign"
             @handle-current-change="handleCurrentChangeContractSign"
           />
         </div>
@@ -56,12 +55,10 @@
     <create
       :props-dialog-visible="dialogPop"
       @handle-submit="handleCreate"
-      @handle-remove="handleRemove"
     />
     <edit
       :props-dialog-visible="dialogPop"
       @handle-submit="handleSubmitEdit"
-      @handle-remove="handleRemove"
     />
     <edit-contract-sign />
   </div>
@@ -143,6 +140,10 @@ export default {
     this.fetchDataContractSign()
   },
   methods: {
+    handleCurrentChangeContractSign () {
+      // eslint-disable-next-line no-console
+      console.log('temp handleCurrentChangeContractSign')
+    },
     openDialog () {
       EventBus.$emit('OpenCreateContract', true)
     },

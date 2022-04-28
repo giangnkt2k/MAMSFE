@@ -267,9 +267,7 @@ export default {
     },
     async changeStatusBill (item) {
       try {
-        // eslint-disable-next-line no-console
-        console.log('check', item)
-        // this.$store.commit('pages/setLoading', true)
+        // Check the invoice exists or not
         const check = this.listBillCreated.filter(e => (e.room_id === item.id) && (e.date === item.date))
 
         await bill.update({

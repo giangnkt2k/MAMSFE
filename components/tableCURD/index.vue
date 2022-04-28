@@ -143,12 +143,12 @@ export default {
     propsHideEdit: {
       type: Boolean,
       default: false,
-      required: true
+      required: false
     },
     propsHideDelete: {
       type: Boolean,
       default: false,
-      required: true
+      required: false
     },
     // propsHiddenDelete: {
     //   type: Boolean,

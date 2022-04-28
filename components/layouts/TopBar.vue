@@ -11,6 +11,14 @@
         <i v-if="isCollapse=== false" class="el-icon-s-fold" @click="changeTypeMenu(true)" />
         <i v-if="isCollapse !== false" class="el-icon-s-unfold" @click="changeTypeMenu(false)" />
       </span>
+      <span>
+        <el-breadcrumb class="breadcrumb-nav" separator="/">
+          <el-breadcrumb-item :to="{ path: '/' }">
+            Homepage
+          </el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $router.currentRoute.name }}</el-breadcrumb-item>
+        </el-breadcrumb>
+      </span>
       <el-submenu index="2">
         <template slot="title">
           GiangNKT
@@ -32,13 +40,32 @@ export default {
     return {
       activeIndex: '1',
       activeIndex2: '1',
-      isCollapse: false
+      isCollapse: false,
+      path: ''
     }
   },
   propsCollapse: {
     type: Boolean,
     required: true,
     default: false
+  },
+  watch: {
+    $router (to, from) {
+      // eslint-disable-next-line no-console
+      console.log('alo1===>', to)
+      // eslint-disable-next-line no-console
+      console.log('alo=2==>', from)
+      // eslint-disable-next-line no-console
+      console.log('alo==3=>', this.$router)
+      this.path = this.$router.currentRoute.name
+    }
+  },
+  updated () {
+    this.path = this.$router.currentRoute.name
+  },
+  created () {
+    // eslint-disable-next-line no-console
+    console.log('alo===>', this.$router.currentRoute.name)
   },
   methods: {
     handleSelect (key, keyPath) {
@@ -71,9 +98,18 @@ ul.el-menu-demo.el-menu--horizontal.el-menu {
   float: right;
 }
 .icon-nav {
-  top: 17px;
-  left: 17px;
-  position: absolute;
+  padding: 0 15px;
+  line-height: 60px;
+  height: 100%;
+  float: left;
+  cursor: pointer;
+}
+.breadcrumb-nav {
+  padding: 0 15px;
+  line-height: 60px;
+  height: 100%;
+  float: left;
+  cursor: pointer;
 }
 .logo-nav {
     top: 5px;

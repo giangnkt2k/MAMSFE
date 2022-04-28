@@ -36,8 +36,8 @@
         >
           <template slot-scope="scope">
             <span class="rowSpan">
-              <el-tag v-if="scope.row['status_bill'] === 1" type="success"> Paied </el-tag>
-              <el-tag v-if="scope.row['status_bill'] !== 1" type="danger"> Not paied {{ scope.row[col.field] }} </el-tag>
+              <el-tag v-if="scope.row['status_bill'] === 1" type="success"> Paid </el-tag>
+              <el-tag v-if="scope.row['status_bill'] !== 1" type="danger"> Unpaid </el-tag>
             </span>
           </template>
         </el-table-column>
@@ -142,12 +142,12 @@ export default {
     propsHideEdit: {
       type: Boolean,
       default: false,
-      required: true
+      required: false
     },
     propsHideDelete: {
       type: Boolean,
       default: false,
-      required: true
+      required: false
     },
     // propsHiddenDelete: {
     //   type: Boolean,
