@@ -1,20 +1,26 @@
 <template>
   <div>
     <div class="md:container md:mx-auto  pt-6 px-6 md:px-2">
-      <div class="block mb-8 grid grid-cols-6 gap-4 items-center">
-        <div class="w-80 search-div col-start-1 col-end-8  md:col-end-4 flex flex-row">
-          <el-input
-            v-model="key_search"
-            placeholder="Type to search"
-          />
-          <el-button class="ml-3" icon="el-icon-search" @click="handleSearch" />
+      <el-card class="mb-8">
+        <div class="block grid grid-cols-6 gap-4 items-center">
+          <div class="w-80 search-div col-start-1 col-end-8  md:col-end-4 flex flex-row">
+            <el-input
+              v-model="key_search"
+              placeholder="Type to search"
+            />
+            <el-button class="ml-3" icon="el-icon-search" @click="handleSearch" />
+          </div>
+          <div class="create-div col-start-1 md:col-start-8 col-end-8">
+            <el-button type="success" @click="openDialog">
+              Create Building
+            </el-button>
+            <el-button type="warning" @click="openDialogMany">
+              Import CSV
+            </el-button>
+          </div>
         </div>
-        <div class="create-div col-start-1 md:col-start-8 col-end-8">
-          <el-button type="success" @click="openDialog">
-            Create Building
-          </el-button>
-        </div>
-      </div>
+      </el-card>
+
       <components-table
         :props-table-data="tableData"
         :props-table-header="tableHeader"
@@ -40,6 +46,9 @@
       @handle-import-image="handleImportImage"
       @handle-remove="handleRemove"
     />
+    <create-many
+      :props-dialog-visible="dialogPop"
+    />
   </div>
 </template>
 
@@ -48,6 +57,7 @@ import * as buiding from '@/api/building'
 import ComponentsTable from '@/components/tableCURD/index.vue'
 import DialogsCreateBuilding from '@/components/dialogs/building/dialogsCreateBuilding.vue'
 import edit from '@/components/dialogs/building/edit.vue'
+import createMany from '@/components/dialogs/building/createMany.vue'
 import EventBus from '@/utils/eventBus'
 import { CITIES, DISTRICTS } from '@/configs/valuesSelect.js'
 import { COMMUNES } from '@/configs/communes.js'
@@ -58,7 +68,8 @@ export default {
   components: {
     ComponentsTable,
     DialogsCreateBuilding,
-    edit
+    edit,
+    createMany
   },
   mixins: [initToken],
   data () {
@@ -154,6 +165,9 @@ export default {
   methods: {
     openDialog () {
       EventBus.$emit('OpenCreateBuilding', true)
+    },
+    openDialogMany () {
+      EventBus.$emit('OpenCreateManyBuilding', true)
     },
     async handleEdit (data) {
       // eslint-disable-next-line no-console

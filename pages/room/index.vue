@@ -68,6 +68,8 @@
           </div>
         </div>
       </el-card>
+
+      <!-- <csv /> -->
       <components-table
         :props-table-data="tableData"
         :props-table-header="tableHeader"
@@ -109,6 +111,7 @@ import * as contract from '@/api/contract'
 import * as rental from '@/api/rental'
 
 import ComponentsTable from '@/components/tableExpandable/index.vue'
+// import csv from '@/components/csv/index.vue'
 import create from '@/components/dialogs/room/create.vue'
 import edit from '@/components/dialogs/room/edit.vue'
 import renting from '@/components/dialogs/room/renting.vue'
@@ -122,6 +125,7 @@ export default {
     create,
     edit,
     renting
+    // csv
   },
   mixins: [initToken],
   data () {
