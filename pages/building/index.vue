@@ -48,6 +48,7 @@
     />
     <create-many
       :props-dialog-visible="dialogPop"
+      @handle-create-csv="handleCreateMany"
     />
   </div>
 </template>
@@ -281,6 +282,21 @@ export default {
 
         formData.append('file', file)
         const image = await buiding.importFile(formData)
+        // eslint-disable-next-line no-console
+        console.log('img', image)
+        this.imageList.push(image.data.data)
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.log('e', e)
+      }
+    },
+    async handleCreateMany (file) {
+      try {
+        // eslint-disable-next-line no-console
+        const formData = new FormData()
+
+        formData.append('file', file)
+        const image = await buiding.importFileBuilding(formData)
         // eslint-disable-next-line no-console
         console.log('img', image)
         this.imageList.push(image.data.data)

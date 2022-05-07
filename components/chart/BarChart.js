@@ -17,7 +17,7 @@ export default {
       //   return newTitle.push(newT)
       // })
       const barChartData = {
-        labels: data.label,
+        labels: data.labels,
         datasets: [
           {
             label: 'Client',

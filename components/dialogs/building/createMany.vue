@@ -52,19 +52,13 @@ export default {
     })
   },
   methods: {
-    async handleSubmit () {
-      const isValid = await this.$refs.obsAddBuilding.validate()
-      if (!isValid) {
-        this.$message.warning('Something went wrong')
-        return
-      }
+    handleSubmit () {
       this.$emit('handle-submit', this.formData)
       this.dialogVisible = false
-      this.handleClearform()
     },
     beforeUpload (file, fileList) {
       // eslint-disable-next-line no-console
-      this.$emit('handle-import-image', file)
+      this.$emit('handle-create-csv', file)
     },
     handleRemove (file, fileList) {
       this.$emit('handle-remove', file)

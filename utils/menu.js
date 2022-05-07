@@ -4,21 +4,24 @@ export default [
     title: 'Dashboard',
     link: '/',
     icon: 'el-icon-menu',
-    active: false
+    active: false,
+    role: 0
   },
   {
     routerName: '',
     title: 'User',
     link: '/user',
     icon: 'el-icon-user-solid',
-    active: false
+    active: false,
+    role: 0
   },
   {
     routerName: '',
     title: 'Contract',
     link: '/contract',
     icon: 'el-icon-tickets',
-    active: false
+    active: false,
+    role: 0
   },
   {
     routerName: '',
@@ -34,7 +37,8 @@ export default [
         title: 'Room',
         link: '/room'
       }
-    ]
+    ],
+    role: 0
   },
   {
     routerName: '',
@@ -50,13 +54,23 @@ export default [
         title: 'Electricity indicator',
         link: '/electric'
       }
-    ]
+    ],
+    role: 0
   },
   {
     routerName: '',
     title: 'Bill',
     link: '/bill',
     icon: 'el-icon-price-tag',
-    active: false
+    active: false,
+    role: 0
+  },
+  {
+    routerName: '',
+    title: 'Status',
+    link: '/status',
+    icon: 'el-icon-info',
+    active: false,
+    role: 3
   }
 ]

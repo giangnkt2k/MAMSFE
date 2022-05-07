@@ -80,7 +80,9 @@ export default {
           const currentUser = res.data.data.profile
           this.$store.commit('auth/setAuthenticate', token)
           this.$store.commit('user/setCurrentUser', currentUser)
-          this.redirectByAuth()
+          this.$store.commit('user/setRole', currentUser)
+
+          this.redirectByAuth(currentUser)
           this.$store.commit('pages/setLoading', false)
         }
       } catch (e) {
@@ -88,14 +90,12 @@ export default {
         this.$store.commit('pages/setLoading', false)
       }
     },
-    redirectByAuth () {
-      // if (user.role[0] && user.role[0].id === UserRoleId.ADMIN_MANAGE) {
-      //   this.$router.push('/delivery')
-      // } else if (user.role[0] && user.role[0].id === UserRoleId.ADMIN_VEHICLE_ALLOCATION) {
-      //   this.$router.push('/driver-time-in-out')
-      // } else {
-      this.$router.push('/')
-      // }
+    redirectByAuth (user) {
+      if (user.role === 3) {
+        this.$router.push('/status')
+      } else {
+        this.$router.push('/')
+      }
     }
   }
 }

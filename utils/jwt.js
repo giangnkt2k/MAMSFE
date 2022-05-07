@@ -11,4 +11,5 @@ export const saveToken = (token) => {
 
 export const destroyToken = () => {
   Cookies.remove(ID_TOKEN_KEY)
+  Cookies.remove('role')
 }

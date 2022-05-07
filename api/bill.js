@@ -12,6 +12,10 @@ export const listBillByDate = async (params = {}) => {
   return await axios.get('bill/indexByDate', { params })
 }
 
+export const listBillByRoom = async (params = {}) => {
+  return await axios.get('bill/indexByRoom', { params })
+}
+
 export const addOne = async (params = {}) => {
   return await axios.post('bill', params)
 }
